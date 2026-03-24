@@ -10,10 +10,14 @@ __pycache__/
 .venv
 
 # Materials for scripts and result
-output_data/*
+# output_data/*
 media/*
 models/*
+cam1_imgs
+cam2_imgs
 
-!output_data/.gitkeep
+!cam1_imgs/.gitkeep
+!cam2_imgs/.gitkeep
+# !output_data/.gitkeep
 !media/.gitkeep
 !models/.gitkeep
