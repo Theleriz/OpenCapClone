@@ -3,6 +3,7 @@ __pycache__/
 
 # Ignore VS Code settings
 .vscode/
+.env
 
 # Ignore log files
 *.log
@@ -11,7 +12,7 @@ __pycache__/
 
 # Materials for scripts and result
 output_data/*
-# media/*
+media/*
 
 !cam1_imgs/.gitkeep
 !cam2_imgs/.gitkeep
