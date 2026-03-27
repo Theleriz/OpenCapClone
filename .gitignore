@@ -1,23 +1,20 @@
-# # Ignore Python cache
-# __pycache__/
+# Ignore Python cache
+__pycache__/
 
-# # Ignore VS Code settings
-# .vscode/
+# Ignore VS Code settings
+.vscode/
 
-# # Ignore log files
-# *.log
-# # Python enviorment file
-# .venv
+# Ignore log files
+*.log
+# Python enviorment file
+.venv
 
-# # Materials for scripts and result
-# # output_data/*
+# Materials for scripts and result
+output_data/*
 # media/*
-# models/*
-# cam1_imgs
-# cam2_imgs
 
-# !cam1_imgs/.gitkeep
-# !cam2_imgs/.gitkeep
-# # !output_data/.gitkeep
-# !media/.gitkeep
-# !models/.gitkeep
+!cam1_imgs/.gitkeep
+!cam2_imgs/.gitkeep
+# !output_data/.gitkeep
+!media/.gitkeep
+!models/.gitkeepA
