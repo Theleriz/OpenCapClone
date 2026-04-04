@@ -14,14 +14,15 @@ __pycache__/
 output_data/*
 media/*
 
+cam1_imgs
+cam2_imgs
 !cam1_imgs/.gitkeep
 !cam2_imgs/.gitkeep
 # !output_data/.gitkeep
 !media/.gitkeep
 !models/.gitkeep
 
-.media
-!.media/gitkeep
 
 simple.py 
 scripts/type-shi.py
+data_by_year
