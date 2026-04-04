@@ -8,10 +8,10 @@ import csv
 # --- PATH SETTINGS ---
 base_path = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(base_path, '..', 'models', 'hand_landmarker.task')
-INPUT_VIDEO = os.path.join(base_path, '..', 'media', 'cam1.mp4')
+INPUT_VIDEO = os.path.join(base_path, '..', 'media', 'cam2.mp4')
 OUTPUT_DIR = os.path.join(base_path, '..', 'output_data')
-OUTPUT_FILENAME = 'hands_coords_cam1.csv'
-OUTPUT_VIDEO = 'hands_tracked_cam1.mp4'
+OUTPUT_FILENAME = 'hands_coords_cam2.csv'
+OUTPUT_VIDEO = 'hands_tracked_cam2.mp4'
 
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"Model file not found at path: {MODEL_PATH}")
@@ -84,7 +84,7 @@ def process_video():
     writer_video = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
 
     HAND_COLORS = [
-        (0, 255, 0),    # рука 0 — зелёная
+        (0, 255, 255),    # рука 0 — зелёная
         (255, 100, 0),  # рука 1 — синяя
     ]
     HAND_LABELS = ['Hand 0', 'Hand 1']

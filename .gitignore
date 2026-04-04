@@ -18,4 +18,10 @@ media/*
 !cam2_imgs/.gitkeep
 # !output_data/.gitkeep
 !media/.gitkeep
-!models/.gitkeepA
+!models/.gitkeep
+
+.media
+!.media/gitkeep
+
+simple.py 
+scripts/type-shi.py
