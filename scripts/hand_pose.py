@@ -4,6 +4,7 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 import os
 import csv
+import argparse
 
 # --- PATH SETTINGS ---
 base_path = os.path.dirname(os.path.abspath(__file__))
@@ -13,23 +14,15 @@ OUTPUT_DIR = os.path.join(base_path, '..', 'output_data')
 OUTPUT_FILENAME = 'hands_coords_cam2.csv'
 OUTPUT_VIDEO = 'hands_tracked_cam2.mp4'
 
-# ============================================================
-# НАСТРОЙКА МАППИНГА РУК
-# Нейронка определяет руки как h0 и h1.
-# Здесь ты указываешь, как записывать их в CSV.
-#
-# Пример 1 (по умолчанию, без изменений):
-#   HAND_MAPPING = {0: 0, 1: 1}
-#   → нейронка h0 → записывается как h0, h1 → как h1
-#
-# Пример 2 (поменять местами):
-#   HAND_MAPPING = {0: 1, 1: 0}
-#   → нейронка h0 → записывается как h1, h1 → как h0
-# ============================================================
-HAND_MAPPING = {
-    0: 0,   # нейронка видит как h0 → записать как h0
-    1: 1,   # нейронка видит как h1 → записать как h1
-}
+parser = argparse.ArgumentParser()
+parser.add_argument('--swap', action='store_true',
+                    help='Поменять руки местами: нейронная h0 → CSV h1, h1 → CSV h0')
+args = parser.parse_args()
+
+if args.swap:
+    HAND_MAPPING = {0: 1, 1: 0}
+else:
+    HAND_MAPPING = {0: 0, 1: 1}
 
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"Model file not found at path: {MODEL_PATH}")
