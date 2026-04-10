@@ -3,28 +3,23 @@ import numpy as np
 import os
 import json
 
-# --- Параметры камер ---
-mtx1 = np.array([
-    [1097.5840828812597, 0.0,              1025.247734218068],
-    [0.0,               984.0683528693361, 385.81068894476743],
-    [0.0,               0.0,              1.0]
-])
-dist1 = np.array([-0.48659317148416364, 0.8148522049914797,
-                  -0.012198322959003607, 0.041759706725023424, -0.5303064734026546])
+base_path = os.path.dirname(os.path.abspath(__file__))
+output_data_dir = os.path.join(base_path, '..', 'output_data')
 
-mtx2 = np.array([
-    [1381.2870410610528, 0.0,               609.2616368532443],
-    [0.0,               1410.1934137649462, 380.89647173154975],
-    [0.0,               0.0,               1.0]
-])
-dist2 = np.array([0.3277110794081981, -10.040639694630121,
-                  -0.008637784469658266, -0.08391471654141584, 49.07735821474451])
+def _load_camera_params(json_path):
+    with open(json_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    mtx  = np.array(data['camera_matrix'], dtype=np.float64)
+    dist = np.array(data['dist_coefficients'], dtype=np.float64).flatten()
+    return mtx, dist
+
+mtx1, dist1 = _load_camera_params(os.path.join(output_data_dir, 'camera_params1.json'))
+mtx2, dist2 = _load_camera_params(os.path.join(output_data_dir, 'camera_params2.json'))
 
 # 11 columns × 9 rows → inner corners = (10, 8)
 CHECKERBOARD = (10, 8)
 SQUARE_SIZE = 25  # мм
 
-base_path = os.path.dirname(os.path.abspath(__file__))
 CAM1_IMAGES_PATH = os.path.join(base_path, '..', 'cam1_imgs')
 CAM2_IMAGES_PATH = os.path.join(base_path, '..', 'cam2_imgs')
 
@@ -111,10 +106,7 @@ if __name__ == "__main__":
         "vector": T.tolist(),
     }
 
-    output_dir = os.path.join(base_path, '..', 'output_data')
-    os.makedirs(output_dir, exist_ok=True)
-
-    file_path = os.path.join(output_dir, "matrix_vector.json")
+    file_path = os.path.join(output_data_dir, "matrix_vector.json")
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data_to_save, f, indent=4)
 
