@@ -13,6 +13,24 @@ OUTPUT_DIR = os.path.join(base_path, '..', 'output_data')
 OUTPUT_FILENAME = 'hands_coords_cam2.csv'
 OUTPUT_VIDEO = 'hands_tracked_cam2.mp4'
 
+# ============================================================
+# НАСТРОЙКА МАППИНГА РУК
+# Нейронка определяет руки как h0 и h1.
+# Здесь ты указываешь, как записывать их в CSV.
+#
+# Пример 1 (по умолчанию, без изменений):
+#   HAND_MAPPING = {0: 0, 1: 1}
+#   → нейронка h0 → записывается как h0, h1 → как h1
+#
+# Пример 2 (поменять местами):
+#   HAND_MAPPING = {0: 1, 1: 0}
+#   → нейронка h0 → записывается как h1, h1 → как h0
+# ============================================================
+HAND_MAPPING = {
+    0: 0,   # нейронка видит как h0 → записать как h0
+    1: 1,   # нейронка видит как h1 → записать как h1
+}
+
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"Model file not found at path: {MODEL_PATH}")
 
@@ -28,7 +46,6 @@ options = vision.HandLandmarkerOptions(
 )
 detector = vision.HandLandmarker.create_from_options(options)
 
-# Связи скелета руки — без легаси
 HAND_CONNECTIONS = [
     (0, 1), (1, 2), (2, 3), (3, 4),
     (0, 5), (5, 6), (6, 7), (7, 8),
@@ -50,10 +67,8 @@ def draw_hand(frame, landmarks, color):
         (int(lm.x * frame.shape[1]), int(lm.y * frame.shape[0]))
         for lm in landmarks
     ]
-
     for start_idx, end_idx in HAND_CONNECTIONS:
         cv2.line(frame, pts[start_idx], pts[end_idx], color, 2)
-
     for p_idx, (cx, cy) in enumerate(pts):
         cv2.circle(frame, (cx, cy), 5, color, -1)
         cv2.circle(frame, (cx, cy), 5, (255, 255, 255), 1)
@@ -76,18 +91,22 @@ def process_video():
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     print(f"Processing started: {INPUT_VIDEO} ({total_frames} frames, {width}x{height} @ {fps:.1f}fps)")
 
+    # Печатаем текущий маппинг чтобы было видно что записывается
+    print("Hand mapping (neural net → CSV):")
+    for neural_idx, csv_idx in HAND_MAPPING.items():
+        print(f"  Neural h{neural_idx} → CSV h{csv_idx}")
+
     output_csv_path   = os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)
     output_video_path = os.path.join(OUTPUT_DIR, OUTPUT_VIDEO)
 
-    # --- VIDEO WRITER ---
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     writer_video = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
 
-    HAND_COLORS = [
-        (0, 255, 255),    # рука 0 — зелёная
-        (255, 100, 0),  # рука 1 — синяя
-    ]
-    HAND_LABELS = ['Hand 0', 'Hand 1']
+    # Цвета привязаны к CSV-индексу (как будет записано), а не к нейронному
+    HAND_COLORS = {
+        0: (0, 255, 255),   # CSV h0 — жёлтый
+        1: (255, 100, 0),   # CSV h1 — синий
+    }
 
     with open(output_csv_path, 'w', newline='') as f:
         writer_csv = csv.writer(f)
@@ -103,36 +122,40 @@ def process_video():
             timestamp_ms = int((frame_idx / fps) * 1000)
             result = detector.detect_for_video(mp_image, timestamp_ms)
 
-            row_data = [0.0] * 84
+            row_data = [0.0] * 84  # 2 руки × 21 точки × 2 координаты
 
             if result.hand_landmarks:
-                for h_idx, landmarks in enumerate(result.hand_landmarks):
-                    if h_idx > 1:
+                for neural_idx, landmarks in enumerate(result.hand_landmarks):
+                    if neural_idx > 1:
                         break
 
-                    color = HAND_COLORS[h_idx]
+                    # Применяем маппинг: узнаём CSV-индекс для этой руки
+                    csv_idx = HAND_MAPPING.get(neural_idx, neural_idx)
+                    color = HAND_COLORS[csv_idx]
 
+                    # Записываем координаты в позицию csv_idx
                     for p_idx, lm in enumerate(landmarks):
                         pixel_x = lm.x * frame.shape[1]
                         pixel_y = lm.y * frame.shape[0]
-                        row_data[h_idx * 42 + p_idx * 2] = pixel_x
-                        row_data[h_idx * 42 + p_idx * 2 + 1] = pixel_y
+                        row_data[csv_idx * 42 + p_idx * 2]     = pixel_x
+                        row_data[csv_idx * 42 + p_idx * 2 + 1] = pixel_y
 
                     draw_hand(frame, landmarks, color)
 
                     wrist = landmarks[0]
                     wx = int(wrist.x * frame.shape[1])
                     wy = int(wrist.y * frame.shape[0])
+                    # На видео показываем оба индекса: нейронный и CSV
+                    label = f"Neural h{neural_idx} → CSV h{csv_idx}"
                     cv2.putText(
-                        frame, HAND_LABELS[h_idx],
+                        frame, label,
                         (wx - 20, wy - 15),
                         cv2.FONT_HERSHEY_SIMPLEX,
-                        0.6, color, 2, cv2.LINE_AA
+                        0.5, color, 2, cv2.LINE_AA
                     )
 
             writer_csv.writerow([frame_idx, timestamp_ms] + row_data)
 
-            # Инфо на кадре
             cv2.putText(
                 frame, f"Frame: {frame_idx}/{total_frames}",
                 (10, 30),
@@ -140,7 +163,6 @@ def process_video():
                 0.7, (0, 200, 255), 2, cv2.LINE_AA
             )
 
-            # Записываем кадр в выходное видео
             writer_video.write(frame)
 
             cv2.imshow('MediaPipe Hand Tracking', frame)
