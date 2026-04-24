@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 
 # --- PATH SETTINGS ---
 base_path = os.path.dirname(os.path.abspath(__file__))
-VIDEO1    = os.path.join(base_path, '..', 'media', 'cam1.mp4')
-VIDEO2    = os.path.join(base_path, '..', 'media', 'cam2.mp4')
-OUT_CAM1  = os.path.join(base_path, '..', 'media', 'cam1_synced.mp4')
-OUT_CAM2  = os.path.join(base_path, '..', 'media', 'cam2_synced.mp4')
+VIDEO1    = os.path.join(base_path, '..', 'media', 'cal1l.mp4')
+VIDEO2    = os.path.join(base_path, '..', 'media', 'cal1r.mp4')
+OUT_CAM1  = os.path.join(base_path, '..', 'media', 'cal1l_synced.mp4')
+OUT_CAM2  = os.path.join(base_path, '..', 'media', 'cal1r_synced.mp4')
 
 # --- FLASH DETECTION SETTINGS ---
 SCAN_SCALE       = 0.25   # downscale factor for scanning speed

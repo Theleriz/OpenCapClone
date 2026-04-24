@@ -9,7 +9,7 @@ import argparse
 # --- PATH SETTINGS ---
 base_path = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(base_path, '..', 'models', 'hand_landmarker.task')
-INPUT_VIDEO = os.path.join(base_path, '..', 'media', 'cam1_synced.mp4')
+INPUT_VIDEO = os.path.join(base_path, '..', 'media', 'partl.mp4')
 OUTPUT_DIR = os.path.join(base_path, '..', 'output_data')
 OUTPUT_FILENAME = 'hands_coords_cam2.csv'
 OUTPUT_VIDEO = 'hands_tracked_cam2.mp4'
