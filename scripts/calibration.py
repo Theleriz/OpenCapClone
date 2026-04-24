@@ -5,11 +5,11 @@ import json
 
 # --- Настройки ---
 CHECKERBOARD = (10, 8)
-SQUARE_SIZE = 25
+SQUARE_SIZE = 25 #mm
 
 # Пути к папкам с изображениями для каждой камеры
-CAM1_IMAGES_PATH = r'C:\projects\ProjectX\cam1_imgs'
-CAM2_IMAGES_PATH = r'C:\projects\ProjectX\cam2_imgs'
+CAM1_IMAGES_PATH = r'C:\projects\ProjectX\cal1l_imgs'
+CAM2_IMAGES_PATH = r'C:\projects\ProjectX\cal1r_imgs'
 
 
 def calibrate_camera(images_dir):
