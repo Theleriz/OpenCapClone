@@ -11,7 +11,7 @@ __pycache__/
 .venv
 
 # Materials for scripts and result
-output_data/*
+# output_data/*
 media/*
 
 cam1_imgs
